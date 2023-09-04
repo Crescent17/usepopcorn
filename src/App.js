@@ -163,6 +163,8 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
     const [movie, setMovie] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     const [userRating, setUserRating] = useState('')
+    const isWatched = watched.map(movie => movie.imdbID);
+    const watchedMovieRating = watched.filter(movie => movie.imdbID === selectedId)[0]?.userRating
 
     const {
         Title: title,
@@ -218,13 +220,16 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
             </header>
             <section>
                 <div className="rating">
-                    <>
-                        <StarRating size={24} onSetRating={setUserRating}/>
+                    {isWatched.includes(selectedId) ? <p>You rated this movie with {watchedMovieRating}⭐</p> : <>
+                        <StarRating size={24}
+                                    onSetRating={setUserRating}/>
                         {userRating > 0 && <button className='btn-add' onClick={() => {
-                            handleAdd(movie)
+                            const watchedMovie = watched.filter(watchedMovie => watchedMovie.imdbID === selectedId);
+                            if (watchedMovie.length !== 0) watchedMovie[0].userRating = userRating
+                            else handleAdd(movie)
                             onCloseMovie()
                         }}>+ Add to list
-                        </button>}</>
+                        </button>}</>}
                 </div>
                 <p><em>{plot}</em></p>
                 <p>Starring {actors}</p>
@@ -249,11 +254,11 @@ function WatchedSummary({watched}) {
             </p>
             <p>
                 <span>⭐️</span>
-                <span>{avgImdbRating}</span>
+                <span>{avgImdbRating.toFixed(1)}</span>
             </p>
             <p>
                 <span>🌟</span>
-                <span>{avgUserRating}</span>
+                <span>{avgUserRating.toFixed(1)}</span>
             </p>
             <p>
                 <span>⏳</span>
