@@ -191,6 +191,13 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
         },
         [selectedId]);
 
+    useEffect(() => {
+        if (title) document.title = `Movie | ${title}`;
+        return function() {
+            document.title = 'usePopcorn'
+        }
+    }, [title]);
+
     function handleAdd() {
         const newWatchedMovie = {
             imdbID: selectedId,
