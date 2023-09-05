@@ -55,7 +55,8 @@ export default function App() {
             setError('')
             return
         }
-        fetchMovies()
+        handleCloseMovie();
+        fetchMovies();
         return function () {
             controller.abort()
         }
@@ -171,7 +172,6 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
     const [userRating, setUserRating] = useState('')
     const isWatched = watched.map(movie => movie.imdbID);
     const watchedMovieRating = watched.filter(movie => movie.imdbID === selectedId)[0]?.userRating
-
     const {
         Title: title,
         Year: year,
@@ -184,6 +184,18 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
         Director: director,
         Genre: genre
     } = movie
+
+    useEffect(() => {
+        function callback(e) {
+            if (e.code === 'Escape') onCloseMovie();
+        }
+
+        document.addEventListener('keydown', callback)
+        return function () {
+            document.removeEventListener('keydown', callback)
+        }
+    }, [onCloseMovie]);
+
     useEffect(() => {
             async function getMovieDetails() {
                 setIsLoading(true)
